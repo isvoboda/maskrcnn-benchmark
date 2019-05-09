@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  dev: &dev
+    build: &dev-build
+      context: ../.
+      dockerfile: ./docker/dev/Dockerfile
+    image: maskrcnn-benchmark-dev
+    volumes:
+      - '../.:/app/'
+    working_dir: /app
+    entrypoint:
+      - bash
+      - -c
+      - |
+        python -m pip install -e .
+        exec "$$@"
+      - bash
+    command: sleep infinity
+  
+      # ["python", "-m", "pip", "install", "-e", "."]
+      # ["python", "-m", "pip", "wheel", "-e", "."]
