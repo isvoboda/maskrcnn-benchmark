@@ -20,3 +20,9 @@ services:
   
       # ["python", "-m", "pip", "install", "-e", "."]
       # ["python", "-m", "pip", "wheel", "-e", "."]
+
+  jupyter:
+    <<: *dev
+    ports: ["8888:8888"]
+    command:
+      ["jupyter", "notebook", "--allow-root", "-y", "--no-browser", "--ip=0.0.0.0"]
