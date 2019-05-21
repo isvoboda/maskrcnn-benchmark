@@ -1,19 +1,29 @@
-version: '3'
+version: '2.3'
 
 services:
   dev: &dev
     build: &dev-build
       context: ../.
       dockerfile: ./docker/dev/Dockerfile
+      args:
+        - NVIDIA=10.0
+        - CUDNN=7
     image: maskrcnn-benchmark-dev
     volumes:
       - '../.:/app/'
+      - ${SSH_AUTH_SOCK}:/ssh-agent
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
     working_dir: /app
+    shm_size: '128gb'
+    # set 'runc' in a case you don't have NVidia
+    runtime: nvidia
     entrypoint:
       - bash
       - -c
       - |
         python -m pip install -e .
+        python -m pip install -e git+ssh://git@git.ba.innovatrics.net:7999/~pavel.svoboda/idf.git@master#egg=idf
         exec "$$@"
       - bash
     command: sleep infinity
@@ -26,3 +36,9 @@ services:
     ports: ["8888:8888"]
     command:
       ["jupyter", "notebook", "--allow-root", "-y", "--no-browser", "--ip=0.0.0.0"]
+
+  lab:
+    <<: *dev
+    ports: ["8888:8888"]
+    command:
+      ["jupyter", "lab", "--allow-root", "-y", "--no-browser", "--ip=0.0.0.0"]
