@@ -27,9 +27,6 @@ services:
         exec "$$@"
       - bash
     command: sleep infinity
-  
-      # ["python", "-m", "pip", "install", "-e", "."]
-      # ["python", "-m", "pip", "wheel", "-e", "."]
 
   jupyter:
     <<: *dev
