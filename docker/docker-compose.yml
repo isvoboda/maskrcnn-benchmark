@@ -6,33 +6,29 @@ services:
       context: ../.
       dockerfile: ./docker/dev/Dockerfile
       args:
-        - NVIDIA=10.0
-        - CUDNN=7
+        CUDA: "10.0"
+        CUDNN: 7
     image: maskrcnn-benchmark-dev
     volumes:
       - '../.:/app/'
       - ${SSH_AUTH_SOCK}:/ssh-agent
+      - '${HOME}/.ssh/known_hosts:/root/.ssh/known_hosts'
     environment:
       - SSH_AUTH_SOCK=/ssh-agent
     working_dir: /app
     shm_size: '128gb'
     # set 'runc' in a case you don't have NVidia
     runtime: nvidia
+    # runtime: runc
     entrypoint:
       - bash
       - -c
       - |
-        python -m pip install -e .
-        python -m pip install -e git+ssh://git@git.ba.innovatrics.net:7999/~pavel.svoboda/idf.git@master#egg=idf
+        python3 -m pip install -e git+ssh://git@git.ba.innovatrics.net:7999/~pavel.svoboda/idf.git@inference#egg=idf
+        python3 -m pip install -e .
         exec "$$@"
       - bash
     command: sleep infinity
-
-  jupyter:
-    <<: *dev
-    ports: ["8888:8888"]
-    command:
-      ["jupyter", "notebook", "--allow-root", "-y", "--no-browser", "--ip=0.0.0.0"]
 
   lab:
     <<: *dev

@@ -29,3 +29,8 @@ dist/
 /datasets
 /models
 /output
+
+**/*.png
+**/*.bmp
+**/*.jp2
+**/*.jpg
