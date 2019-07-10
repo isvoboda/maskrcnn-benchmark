@@ -11,6 +11,7 @@ services:
     image: maskrcnn-benchmark-dev
     volumes:
       - '../.:/app/'
+      - '/srv:/srv'
       - ${SSH_AUTH_SOCK}:/ssh-agent
       - '${HOME}/.ssh/known_hosts:/root/.ssh/known_hosts'
     environment:
@@ -24,7 +25,7 @@ services:
       - bash
       - -c
       - |
-        python3 -m pip install -e git+ssh://git@git.ba.innovatrics.net:7999/~pavel.svoboda/idf.git@inference#egg=idf
+        python3 -m pip install -e git+ssh://git@git.ba.innovatrics.net:7999/~pavel.svoboda/idf.git@master#egg=idf
         python3 -m pip install -e .
         exec "$$@"
       - bash
