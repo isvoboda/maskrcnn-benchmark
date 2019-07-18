@@ -19,6 +19,7 @@ from PIL import Image, ImageOps
 
 from idf.reader import Reader
 from idf.tables.bbox_det import InDetBBox
+from idf.tables.rle import InRLE
 from idf.writer import Writer
 from inm.hdf import META
 from maskrcnn_benchmark.config import cfg
@@ -31,8 +32,12 @@ config_file = "../configs/e2e_mask_rcnn_R_50_FPN_1x.yaml"
 
 # update the config options with the config file
 cfg.merge_from_file(config_file)
-cfg.merge_from_list(["MODEL.DEVICE", "cpu", "MODEL.WEIGHT", "../models/pcards/model_0010000.pth"])
+MDOEL_PTH = "/srv/workplace/psvoboda/projects/maskrcnn-benchmark/model_0010000.pth"
+cfg.merge_from_list(["MODEL.DEVICE", "cpu", "MODEL.WEIGHT", MDOEL_PTH])
 
+H5 = "/srv/tasks/1668_ANY_DEPLOYMENT/Test-Real/pcards-real-00-test.h5"
+INFERENCE_H5 = "/srv/tasks/1668_ANY_DEPLOYMENT/Test-Real/pcards-real-00-test-inference.h5"
+BASEPATH = os.path.dirname(H5)
 
 #%%
 pcards_demo = COCODemo(
@@ -41,6 +46,15 @@ pcards_demo = COCODemo(
     confidence_threshold=0.7,
 )
 
+def mask_to_rle(binmask):
+    mask_flat = np.ravel(binmask, order="F")
+    starts = (np.flatnonzero(mask_flat[1:] != mask_flat[:-1]) + 1).tolist()
+    if mask_flat[0] == 0:
+        starts = [0] + starts + [len(mask_flat)]
+    else:
+        starts = [0, 0] + starts + [len(mask_flat)]
+    rle_data = np.diff(starts)
+    return rle_data
 
 def idf_image(reader: Reader, basepath: Optional[str] = None):
     """Yields tuple of image id, and image."""
@@ -53,11 +67,12 @@ def idf_image(reader: Reader, basepath: Optional[str] = None):
         yield idf_img, img
 
 
-reader = Reader.from_filepath("../datasets/pcards/pcards-synthetic-00-test.h5")
-with tb.open_file("../datasets/pcards/pcards-synthetic-00-test-inference.h5", "w") as hdf:
+reader = Reader.from_filepath(H5)
+n_imgs = len(reader.image_uids)
+with tb.open_file(INFERENCE_H5, "w") as hdf:
     writer = Writer(hdf, reader.info(META.DATASET))
-    
-    for idf_img, img in tqdm(idf_image(reader, "../datasets/pcards/test"), "Inference", total=1000):
+
+    for idf_img, img in tqdm(idf_image(reader, BASEPATH), "Inference", total=n_imgs):
         predictions = pcards_demo.compute_prediction(img)
 
         writer.add_image(
@@ -66,13 +81,19 @@ with tb.open_file("../datasets/pcards/pcards-synthetic-00-test-inference.h5", "w
         )
 
         xywh_preds = predictions.convert("xywh")
-        for bbox, score, label in zip(
+        for bbox, score, label, mask in zip(
                 xywh_preds.bbox, xywh_preds.get_field("scores"),
-                xywh_preds.get_field("labels")):
-            ann = InDetBBox(
+                xywh_preds.get_field("labels"),
+                xywh_preds.get_field("mask")):
+            bbox_ann = InDetBBox(
                 label, bbox[1], bbox[0], bbox[3], bbox[2],
-                bbox[3]*bbox[2], score
+                bbox[3] * bbox[2], score
             )
-            writer.add_ann(idf_img.img_uid, ann)
+            ann_id = writer.add_ann(idf_img.img_uid, bbox_ann)
+
+            rle = mask_to_rle(mask.numpy())
+            area = np.sum(rle[1::2])
+            rle_ann = InRLE(label, area, rle)
+            writer.append_ann(ann_id, idf_img.img_uid, rle_ann)
 
     writer.write_tables()
