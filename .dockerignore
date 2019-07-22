@@ -1,2 +1,10 @@
-**/*.sqfs
-**/*.pth
+# Ignore everything
+**
+
+# Allow docker folder
+!/docker/**
+
+# Allow maskrcnn-benchmark source
+!/LICENSE
+!/setup.py
+!/maskrcnn_benchmark

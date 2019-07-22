@@ -1,0 +1,43 @@
+# Docker compose for maintaining maskRcnn-benchmark environment.
+#
+# Available services are:
+# - dev: Main service binding several folders to the container for development.
+#        Codes of maskrcnn-benchmark are editable and all changes are persitent.
+#
+# - lab: Based on dev service runs jupyter lab with the same capabilities dev service has 
+#
+# The build process is not provided because of incompatibility between
+# BuildKit and docker-compose. BuildKit allows to forward ssh keys during
+# building which solves a problem with cloning from private repositories.
+
+version: '2.3'
+
+services:
+  dev: &dev
+    # Image has to be build in advance, see README.md
+    image: dev-maskrcnn-benchmark:1.0
+    volumes:
+      - '../../.:/app/'
+      - '/srv/datasets:/srv/datasets'
+      - ${SSH_AUTH_SOCK}:/ssh-agent
+      - '${HOME}/.ssh/known_hosts:/root/.ssh/known_hosts'
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+    working_dir: /app
+    shm_size: '128gb'
+    # set in a case you have NVidia
+    runtime: nvidia
+    entrypoint:
+        - bash
+        - -c
+        - |
+          pip install -e /app
+          exec "$$@"
+        - bash
+    command: bash
+
+  lab:
+    <<: *dev
+    ports: ["8888:8888"]
+    command:
+      ["jupyter", "lab", "--allow-root", "-y", "--no-browser", "--ip=0.0.0.0"]
