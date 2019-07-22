@@ -7,13 +7,13 @@ import os
 class DatasetCatalog(object):
     DATA_DIR = "datasets"
     DATASETS = {
-        "coco_pcards_synthetic_00_train":{
-            "img_dir": "pcards/train",
-            "ann_file": "pcards/annotations/pcards-synthetic-00-train.json"
+        "coco_slaps_training_20190412_tips":{
+            "img_dir": "slaps/train",
+            "ann_file": "slaps/annotations/slaps_training_20190412_tips.json"
         },
-        "coco_pcards_synthetic_00_test":{
-            "img_dir": "pcards/test",
-            "ann_file": "pcards/annotations/pcards-synthetic-00-test.json"
+        "coco_slaps_validation_20190412_tips":{
+            "img_dir": "slaps/test",
+            "ann_file": "slaps/annotations/slaps_validation_20190412_tips.json"
         },
         "coco_2017_train": {
             "img_dir": "coco/train2017",
