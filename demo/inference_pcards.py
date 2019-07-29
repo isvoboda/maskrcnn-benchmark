@@ -28,21 +28,22 @@ from predictor import COCODemo
 from tqdm import tqdm
 
 #%%
-config_file = "../configs/e2e_mask_rcnn_R_50_FPN_1x.yaml"
+config_file = "../configs/inn_pcards_e2e_mask_rcnn_R_50_FPN_1x.yaml"
 
 # update the config options with the config file
 cfg.merge_from_file(config_file)
-MDOEL_PTH = "/srv/workplace/psvoboda/projects/maskrcnn-benchmark/model_0010000.pth"
-cfg.merge_from_list(["MODEL.DEVICE", "cpu", "MODEL.WEIGHT", MDOEL_PTH])
+MDOEL_PTH = "../models/pcards-01/model_final.pth"
+cfg.merge_from_list(["MODEL.DEVICE", "cuda", "MODEL.WEIGHT", MDOEL_PTH])
 
-H5 = "/srv/tasks/1668_ANY_DEPLOYMENT/Test-Real/pcards-real-00-test.h5"
-INFERENCE_H5 = "/srv/tasks/1668_ANY_DEPLOYMENT/Test-Real/pcards-real-00-test-inference.h5"
+H5 = "/srv/datasets/pcards/test-real/pcards-real-00-test.h5"
+H5 = "/srv/datasets/pcards/val/pcards-synthetic-00-val-poly.h5"
+INFERENCE_H5 = "pcards-real-03-test-inference.h5"
 BASEPATH = os.path.dirname(H5)
 
 #%%
 pcards_demo = COCODemo(
     cfg,
-    min_image_size=800,
+    min_image_size=1278,
     confidence_threshold=0.7,
 )
 
@@ -74,7 +75,6 @@ with tb.open_file(INFERENCE_H5, "w") as hdf:
 
     for idf_img, img in tqdm(idf_image(reader, BASEPATH), "Inference", total=n_imgs):
         predictions = pcards_demo.compute_prediction(img)
-
         writer.add_image(
             img_path=idf_img.img_path, img_id=idf_img.img_id,
             img_height=idf_img.img_height, img_width=idf_img.img_width
