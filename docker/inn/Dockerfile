@@ -68,23 +68,28 @@ RUN --mount=type=ssh mkdir -p -m 0600 ~/.ssh \
 WORKDIR /app
 COPY . .
 
-# Fool the image to have maskrcnn-benchmark installed in development
-# mode in /opt/venv/lib/python3.6/site-packages referencing to /app
-# The/app is thrown away and replaced by a bind of actual
-# maskrcnn-benchmark source in the dev-image
 RUN python setup.py bdist_wheel
 
 # Development Image
 
 FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu18.04 as dev-image
 
+ARG USERNAME="developer"
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
-LABEL com.innovatrics.dev-maskrcnn="1.0.0"
+LABEL com.innovatrics.maskrcnn-dev="1.0.0"
 
 RUN apt-get update && apt-get -y install --no-install-recommends \
-        libglib2.0-0 \
+        openssh-client \
+        git \
+        bash-completion \
+        vim \
+        sudo \
+        ibglib2.0-0 \
         libsm6 \
         libxext6 \
         libxrender-dev \
@@ -95,6 +100,16 @@ RUN apt-get update && apt-get -y install --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=compile-image /opt/venv /opt/venv
+
+# Create the user
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+ENV HOME /home/$USERNAME
+USER $USERNAME
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
@@ -107,7 +122,7 @@ FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-runtime-ubuntu18.04 as app-image
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 
-LABEL com.innovatrics.dev-maskrcnn="1.0.0"
+LABEL com.innovatrics.maskrcnn-run="1.0.0"
 
 RUN apt-get update && apt-get -y install --no-install-recommends \
         libglib2.0-0 \

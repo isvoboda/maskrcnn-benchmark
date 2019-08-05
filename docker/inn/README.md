@@ -33,13 +33,15 @@ Two images are available.
 - **dev-maskrcnn-benchmark** designated for development (maskrcnn-benchmark python codes are editable and all changes are permanent).
 - **app-maskrcnn-benchmark** with backed maskrcnn-benchmark almost ready for *deployment*
 
-#### dev-maskrcnn-benchmark
+#### maskrcnn-benchmark-dev
 
 Dev image allows to work with maskrcnn-benchmark codes without the need to rebuild the image with every new change.
 To build the `dev-maskrcnn-benchmark` image run
 
 ~~~bash
 DOCKER_BUILDKIT=1 docker build \
+    --build-arg USER_UID=1000
+    --build-arg USER_GID=1000
     --target dev-image \
     --ssh default \
     --add-host=git.ba.innovatrics.net:$(getent hosts git.ba.innovatrics.net | cut -d' ' -f1) \
@@ -48,8 +50,10 @@ DOCKER_BUILDKIT=1 docker build \
 ~~~
 
 which forwards your ssh agent during the build process and allows to clone several private git Innovatrics repositories.
+USER_UID and USER_GID can be set to reflect your user UID and GID for an easy files handling created inside docker environment but stored on your host.
+Deploying the attached [docker-compose.yml](docker-compose.yml) allows to use ssh and git directly from development container mapped to user who runs the container.
 
-#### app-maskrcnn-benchmark
+#### maskrcnn-benchmark-app
 
 App image which will be further reworked for deployment.
 
@@ -66,9 +70,8 @@ DOCKER_BUILDKIT=1 docker build \
 
 Skip this section in a case no new dependencies need to be changed or added.
 
-Aside is a docker image for freezing the python dependencies based on Python 3.6.8.
-[pip-tools](https://pypi.org/project/pip-tools/) is used to freeze all the dependencies based on the
-[requirements.inn](requirements.inn) file which are stored as [requirements.txt](requirements.txt) and later used for building maskrcnn-benchmark environment.
+[deps/Dockerfile](deps/Dockerfile) provides an environment to freeze all python dependencies with [pip-tools](https://pypi.org/project/pip-tools/) listed in [requirements.in](requirements.in) and store the list in [requirements.txt](requirements.txt)
+
 
 Build the image with
 
