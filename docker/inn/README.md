@@ -40,8 +40,8 @@ To build the `dev-maskrcnn-benchmark` image run
 
 ~~~bash
 DOCKER_BUILDKIT=1 docker build \
-    --build-arg USER_UID=1000
-    --build-arg USER_GID=1000
+    --build-arg USER_UID=1000 \
+    --build-arg USER_GID=1000 \
     --target dev-image \
     --ssh default \
     --add-host=git.ba.innovatrics.net:$(getent hosts git.ba.innovatrics.net | cut -d' ' -f1) \

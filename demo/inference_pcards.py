@@ -28,12 +28,12 @@ from predictor import COCODemo
 from tqdm import tqdm
 
 #%%
-config_file = "../configs/inn_pcards_e2e_mask_rcnn_R_50_FPN_1x.yaml"
+config_file = "../configs/inn_pcards_02.yaml"
 
 # update the config options with the config file
 cfg.merge_from_file(config_file)
-MDOEL_PTH = "../models/pcards-01/model_final.pth"
-cfg.merge_from_list(["MODEL.DEVICE", "cuda", "MODEL.WEIGHT", MDOEL_PTH])
+MODEL_PTH = "../models/pcards-03/model_0005000.pth"
+cfg.merge_from_list(["MODEL.DEVICE", "cuda", "MODEL.WEIGHT", MODEL_PTH])
 
 H5 = "/srv/datasets/pcards/test-real/pcards-real-00-test.h5"
 H5 = "/srv/datasets/pcards/val/pcards-synthetic-00-val-poly.h5"
@@ -67,7 +67,7 @@ def idf_image(reader: Reader, basepath: Optional[str] = None):
 
         yield idf_img, img
 
-
+#%%
 reader = Reader.from_filepath(H5)
 n_imgs = len(reader.image_uids)
 with tb.open_file(INFERENCE_H5, "w") as hdf:
