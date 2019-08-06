@@ -15,7 +15,10 @@ version: '2.3'
 services:
   dev: &dev
     # Image has to be build in advance, see README.md
-    image: dev-maskrcnn-benchmark:1.0
+    # User should distinguish the image with user tag
+    # and set it properly here.
+    # example: image of Jon Wick is jw-maskrcnn-benchmark-dev:1.0
+    image: user-maskrcnn-benchmark-dev:1.0
     volumes:
       - '../../.:/app/'
       - '/srv/datasets:/srv/datasets'
