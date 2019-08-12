@@ -11,6 +11,15 @@ from maskrcnn_benchmark.utils.metric_logger import MetricLogger
 
 from apex import amp
 
+# Set loss weights
+loss_weights = {
+    "loss_box_reg": 1.0,
+    "loss_classifier": 1.0,
+    "loss_mask:": 1.0,
+    "loss_objectness": 1.0,
+    "loss_rpn_box_reg": 1.0,
+}
+
 def reduce_loss_dict(loss_dict):
     """
     Reduce the loss dictionary from all processes so that process with rank
@@ -70,7 +79,12 @@ def do_train(
 
         # reduce losses over all GPUs for logging purposes
         loss_dict_reduced = reduce_loss_dict(loss_dict)
-        losses_reduced = sum(loss for loss in loss_dict_reduced.values())
+        # Apply loss weights
+        losses_reduced = sum(
+            loss_dict_reduced[key]*loss_weights[key]
+            for key in loss_dict_reduced
+        )
+        # losses_reduced = sum(loss for loss in loss_dict_reduced.values())
         meters.update(loss=losses_reduced, **loss_dict_reduced)
 
         optimizer.zero_grad()
