@@ -9,7 +9,7 @@ MODEL:
   BACKBONE:
     CONV_BODY: "R-50-FPN"
     # ResNet50 contains of 5 stages, freeze first four stages
-    FREEZE_CONV_BODY_AT: 4
+    FREEZE_CONV_BODY_AT: 5
   RESNETS:
     BACKBONE_OUT_CHANNELS: 256
   RPN:
@@ -50,7 +50,7 @@ MODEL:
     SHARE_BOX_FEATURE_EXTRACTOR: False
   MASK_ON: True
 DATASETS:
-  TRAIN: ("coco_pcards_synthetic_00_train",)
+  TRAIN: ("coco_pcards_synth_template",)
   TEST: ("coco_pcards_synthetic_00_val", "coco_pcards_real_00_test",)
 DATALOADER:
   SIZE_DIVISIBILITY: 32
@@ -62,6 +62,6 @@ SOLVER:
   MAX_ITER: 360000
   # 2GPUx2
   IMS_PER_BATCH: 8
-OUTPUT_DIR: "models/pcards-03-iou/"
+OUTPUT_DIR: "models/pcards-03-iou-template"
 TEST:
   IMS_PER_BATCH: 6
