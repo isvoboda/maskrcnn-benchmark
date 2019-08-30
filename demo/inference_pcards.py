@@ -28,19 +28,23 @@ from predictor import COCODemo
 from tqdm import tqdm
 
 #%%
-config_file = "../configs/inn_pcards_02.yaml"
+# config_file = "../configs/inn_pcards_03_iou_freezebbn_template.yaml"
+config_file = "../configs/inn_pcards_03_iou.yaml"
 
 # update the config options with the config file
 cfg.merge_from_file(config_file)
-MODEL_PTH = "../models/pcards-03/model_0005000.pth"
+# MODEL_PTH = "../models/pcards-03-iou-template/model_final.pth"
+MODEL_PTH = "../models/pcards-03-iou/model_final.pth"
 cfg.merge_from_list(["MODEL.DEVICE", "cuda", "MODEL.WEIGHT", MODEL_PTH])
 
-H5 = "/srv/datasets/pcards/test-real/pcards-real-00-test.h5"
-H5 = "/srv/datasets/pcards/val/pcards-synthetic-00-val-poly.h5"
-INFERENCE_H5 = "pcards-real-03-test-inference.h5"
+H5_synth = "/srv/datasets/pcards/val/pcards-synthetic-00-val-poly.h5"
+H5_real = "/srv/datasets/pcards/test-real/pcards-real-00-test.h5"
+H5 = H5_synth
+INFERENCE_H5 = "pcards-synth-00-test-inference-iou.h5"
 BASEPATH = os.path.dirname(H5)
 
 #%%
+os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 pcards_demo = COCODemo(
     cfg,
     min_image_size=1278,
@@ -97,3 +101,6 @@ with tb.open_file(INFERENCE_H5, "w") as hdf:
             writer.append_ann(ann_id, idf_img.img_uid, rle_ann)
 
     writer.write_tables()
+
+
+#%%
