@@ -11,13 +11,13 @@ class DatasetCatalog(object):
             "img_dir": "pcards/train",
             "ann_file": "pcards/annotations/pcards-synthetic-00-train-poly.json"
         },
-        "coco_pcards_real_01_test":{
-            "img_dir": "pcards/test-real",
-            "ann_file": "pcards/annotations/pcards-real-01-test-poly.json"
-        },
-        "coco_pcards_synthetic_00_test":{
+        "coco_pcards_synthetic_00_val":{
             "img_dir": "pcards/test",
             "ann_file": "pcards/annotations/pcards-synthetic-00-val-poly.json"
+        },
+        "coco_pcards_real_00_test":{
+            "img_dir": "pcards/test-real",
+            "ann_file": "pcards/annotations/pcards-real-00-test.json"
         },
         "coco_slaps_training_20190412_tips":{
             "img_dir": "slaps/train",
