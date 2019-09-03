@@ -414,6 +414,18 @@ _C.SOLVER.CHECKPOINT_PERIOD = 2500
 # see 2 images per batch
 _C.SOLVER.IMS_PER_BATCH = 16
 
+# Number of iterations to print train meters
+_C.SOLVER.PRINT_STEP = 100
+
+# Loss weights
+_C.SOLVER.LOSS_WEIGHTS = [
+    ("loss_box_reg", 1.0),
+    ("loss_classifier", 1.0),
+    ("loss_mask", 1.0),
+    ("loss_objectness", 1.0),
+    ("loss_rpn_box_reg", 1.0),
+]
+
 # ---------------------------------------------------------------------------- #
 # Specific test options
 # ---------------------------------------------------------------------------- #

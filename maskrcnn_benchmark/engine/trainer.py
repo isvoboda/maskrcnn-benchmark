@@ -2,6 +2,7 @@
 import datetime
 import logging
 import time
+from collections import defaultdict
 
 import torch
 import torch.distributed as dist
@@ -11,14 +12,6 @@ from maskrcnn_benchmark.utils.metric_logger import MetricLogger
 
 from apex import amp
 
-# Set loss weights
-loss_weights = {
-    "loss_box_reg": 1.0,
-    "loss_classifier": 1.0,
-    "loss_mask:": 1.0,
-    "loss_objectness": 1.0,
-    "loss_rpn_box_reg": 1.0,
-}
 
 def reduce_loss_dict(loss_dict):
     """
@@ -54,6 +47,8 @@ def do_train(
     device,
     checkpoint_period,
     arguments,
+    *args,
+    **kwargs
 ):
     logger = logging.getLogger("maskrcnn_benchmark.trainer")
     logger.info("Start training")
@@ -61,6 +56,15 @@ def do_train(
     max_iter = len(data_loader)
     start_iter = arguments["iteration"]
     model.train()
+
+    print_step = 20
+    loss_weights = defaultdict(lambda: 1.)
+    cfg = kwargs.get("cfg", None)
+
+    if cfg is not None:
+        print_step = cfg.SOLVER.PRINT_STEP
+        loss_weights.update(cfg.SOLVER.LOSS_WEIGHTS)
+
     start_training_time = time.time()
     end = time.time()
     for iteration, (images, targets, _) in enumerate(data_loader, start_iter):
@@ -75,16 +79,18 @@ def do_train(
 
         loss_dict = model(images, targets)
 
+        loss_dict = {
+            key: loss_dict[key]*loss_weights[key]
+            for key in loss_dict
+        }
+
         losses = sum(loss for loss in loss_dict.values())
 
         # reduce losses over all GPUs for logging purposes
         loss_dict_reduced = reduce_loss_dict(loss_dict)
-        # Apply loss weights
-        losses_reduced = sum(
-            loss_dict_reduced[key]*loss_weights[key]
-            for key in loss_dict_reduced
-        )
-        # losses_reduced = sum(loss for loss in loss_dict_reduced.values())
+        
+        losses_reduced = sum(loss for loss in loss_dict_reduced.values())
+
         meters.update(loss=losses_reduced, **loss_dict_reduced)
 
         optimizer.zero_grad()
@@ -101,7 +107,7 @@ def do_train(
         eta_seconds = meters.time.global_avg * (max_iter - iteration)
         eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
 
-        if iteration % 20 == 0 or iteration == max_iter:
+        if iteration % print_step == 0 or iteration == max_iter:
             logger.info(
                 meters.delimiter.join(
                     [
