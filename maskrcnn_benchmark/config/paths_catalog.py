@@ -15,6 +15,10 @@ class DatasetCatalog(object):
             "img_dir": "pcards/test",
             "ann_file": "pcards/annotations/pcards-synthetic-00-val-poly.json"
         },
+        "coco_pcards_real_00_train":{
+            "img_dir": "pcards/train-real",
+            "ann_file": "pcards/annotations/pcards-real-00-train.json"
+        },
         "coco_pcards_real_00_test":{
             "img_dir": "pcards/test-real",
             "ann_file": "pcards/annotations/pcards-real-00-test.json"
