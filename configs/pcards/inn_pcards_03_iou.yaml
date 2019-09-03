@@ -9,7 +9,7 @@ MODEL:
   BACKBONE:
     CONV_BODY: "R-50-FPN"
     # ResNet50 contains of 5 stages, freeze first four stages
-    FREEZE_CONV_BODY_AT: 5
+    FREEZE_CONV_BODY_AT: 4
   RESNETS:
     BACKBONE_OUT_CHANNELS: 256
   RPN:
@@ -50,18 +50,18 @@ MODEL:
     SHARE_BOX_FEATURE_EXTRACTOR: False
   MASK_ON: True
 DATASETS:
-  TRAIN: ("coco_pcards_real_00_train",)
-  TEST: ("coco_pcards_synthetic_00_val", "coco_pcards_real_00_test",)
+  TRAIN: ("coco_pcards_synthetic_00_train",)
+  TEST: ("coco_pcards_synthetic_00_test", "coco_pcards_real_00_test",)
 DATALOADER:
   SIZE_DIVISIBILITY: 32
 SOLVER:
   BASE_LR: 0.005
   WEIGHT_DECAY: 0.0001
   # Based on maskrcnn-benchmark readme yet not according detectron
-  STEPS: (16000, 28000)
-  MAX_ITER: 32000
+  STEPS: (240000, 320000)
+  MAX_ITER: 360000
   # 2GPUx2
   IMS_PER_BATCH: 8
-OUTPUT_DIR: "models/pcards-04-real_tflearning/"
+OUTPUT_DIR: "models/pcards-03-iou/"
 TEST:
   IMS_PER_BATCH: 6

@@ -5,7 +5,6 @@ INPUT:
   MAX_SIZE_TEST: 2040
 MODEL:
   META_ARCHITECTURE: "GeneralizedRCNN"
-  # WEIGHT: "catalog://ImageNetPretrained/MSRA/R-50"
   WEIGHT: "models/e2e_mask_rcnn_R_50/e2e_mask_rcnn_R_50_FPN_1x_no_last_layers.pth"
   BACKBONE:
     CONV_BODY: "R-50-FPN"
@@ -13,20 +12,26 @@ MODEL:
     FREEZE_CONV_BODY_AT: 4
   RESNETS:
     BACKBONE_OUT_CHANNELS: 256
-  RETINANET:
-    NUM_CLASSES: 3
   RPN:
     USE_FPN: True
     ANCHOR_SIZES: (16, 32, 64, 128)
     ANCHOR_STRIDE: (4, 8, 16, 32)
+    # Number of top scoring RPN proposals to keep before applying NMS
+    # When FPN is used, this is *per FPN level* (not total)
     PRE_NMS_TOP_N_TRAIN: 2000
     PRE_NMS_TOP_N_TEST: 1000
+    # Number of top scoring RPN proposals to keep after applying NMS
+    POST_NMS_TOP_N_TRAIN: 2000
     POST_NMS_TOP_N_TEST: 1000
-    # Related to N images per GPU, here we have 4 images per GPU: 4×1000
     FPN_POST_NMS_TOP_N_TEST: 500
+    # Related to N images per GPU, here we have 4 images per GPU: 4×1000
     FPN_POST_NMS_TOP_N_TRAIN: 4000
+    FG_IOU_THRESHOLD: 0.5
   ROI_HEADS:
     USE_FPN: True
+    FG_IOU_THRESHOLD: 0.3
+    BG_IOU_THRESHOLD: 0.1
+    NMS: 0.3
   ROI_BOX_HEAD:
     # Number of classes + 1 (background)
     NUM_CLASSES: 3
@@ -43,20 +48,20 @@ MODEL:
     POOLER_SAMPLING_RATIO: 2
     RESOLUTION: 28
     SHARE_BOX_FEATURE_EXTRACTOR: False
-  MASK_ON: False
+  MASK_ON: True
 DATASETS:
-  TRAIN: ("coco_pcards_synthetic_00_train",)
-  TEST: ("coco_pcards_synthetic_00_test",)
-  # TEST: ("coco_pcards_real_01_test",)
+  TRAIN: ("coco_pcards_real_00_train",)
+  TEST: ("coco_pcards_synthetic_00_test", "coco_pcards_real_00_test",)
 DATALOADER:
   SIZE_DIVISIBILITY: 32
 SOLVER:
-  BASE_LR: 0.01
+  BASE_LR: 0.005
   WEIGHT_DECAY: 0.0001
-  STEPS: (25000, 40000, 45000, 48500)
-  MAX_ITER: 50000
-  # 4GPUx4
-  IMS_PER_BATCH: 16
-OUTPUT_DIR: "models/pcards-03-no-masks/"
+  # Based on maskrcnn-benchmark readme yet not according detectron
+  STEPS: (16000, 28000)
+  MAX_ITER: 32000
+  # 2GPUx2
+  IMS_PER_BATCH: 8
+OUTPUT_DIR: "models/pcards-04-real_finetune/"
 TEST:
-  IMS_PER_BATCH: 4
+  IMS_PER_BATCH: 6

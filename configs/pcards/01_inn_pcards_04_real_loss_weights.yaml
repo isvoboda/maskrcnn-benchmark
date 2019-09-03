@@ -9,7 +9,7 @@ MODEL:
   BACKBONE:
     CONV_BODY: "R-50-FPN"
     # ResNet50 contains of 5 stages, freeze first four stages
-    FREEZE_CONV_BODY_AT: 4
+    FREEZE_CONV_BODY_AT: 5
   RESNETS:
     BACKBONE_OUT_CHANNELS: 256
   RPN:
@@ -51,7 +51,8 @@ MODEL:
   MASK_ON: True
 DATASETS:
   TRAIN: ("coco_pcards_real_00_train",)
-  TEST: ("coco_pcards_synthetic_00_val", "coco_pcards_real_00_test",)
+  TEST: ("coco_pcards_synthetic_01_test", "coco_pcards_synthetic_01_test-arc", "coco_pcards_synthetic_01_test-line", "coco_pcards_synthetic_01_test-arc")
+  # TEST: ("coco_pcards_synthetic_00_test", "coco_pcards_real_00_test",)
 DATALOADER:
   SIZE_DIVISIBILITY: 32
 SOLVER:
@@ -62,6 +63,13 @@ SOLVER:
   MAX_ITER: 32000
   # 2GPUx2
   IMS_PER_BATCH: 8
-OUTPUT_DIR: "models/pcards-04-real_finetune/"
+  PRINT_STEP: 100
+  LOSS_WEIGHTS:
+    - [loss_box_reg, 1.0]
+    - [loss_classifier, 1.0]
+    - [loss_mask, 1.0]
+    - [loss_objectness, 1.0]
+    - [loss_rpn_box_reg, 1.0]
+OUTPUT_DIR: "models/pcards-04-real_loss_weights/"
 TEST:
   IMS_PER_BATCH: 6
