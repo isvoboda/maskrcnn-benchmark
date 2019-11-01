@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# %%
 """Eval models based on modified pycocotools."""
 
 import argparse
@@ -12,8 +13,39 @@ from pycocotools.cocoeval import COCOeval
 
 class ARGS(NamedTuple):
     dataset: str = "datasets/pcards/annotations/pcards-real-00-test.json"
-    inference: str = "models/pcards-03-iou/inference/coco_pcards_real_00_test/bbox.json"
+    inference: str = "models/pcards-04-real_loss_weights_b/inference/coco_pcards_real_00_test/bbox.json"
 
+
+args_real_reported = ARGS(
+    "datasets/pcards/annotations/pcards-real-00-test.json",
+    "models/pcards-04-real_loss_weights_b/inference/coco_pcards_real_00_test/bbox.json"
+)
+
+args_synth_01 = ARGS(
+    "datasets/pcards/annotations/test-type-1-b-synth-01.json",
+    "models/pcards-04-real_loss_weights_b/inference/coco_pcards_synthetic_01_test/bbox.json"
+)
+
+args_synth_01_ellipse = ARGS(
+    "datasets/pcards/annotations/test-type-1-b-synth-01-ellipse.json",
+    "models/pcards-04-real_loss_weights_b/inference/coco_pcards_synthetic_01_test-ellipse/bbox.json"
+)
+
+args_synth_01_line = ARGS(
+    "datasets/pcards/annotations/test-type-1-b-synth-01-line.json",
+    "models/pcards-04-real_loss_weights_b/inference/coco_pcards_synthetic_01_test-line/bbox.json"
+)
+
+args_synth_01_arc = ARGS(
+    "datasets/pcards/annotations/test-type-1-b-synth-01-arc.json",
+    "models/pcards-04-real_loss_weights_b/inference/coco_pcards_synthetic_01_test-arc/bbox.json"
+)
+
+
+args_synthetic = ARGS(
+    "datasets/pcards/annotations/pcards-synthetic-00-val-poly-filtered.json",
+    "models/pcards-04-real_loss_weights_b/inference/coco_pcards_synthetic_00_val/bbox.json"
+)
 
 args_iou = ARGS()
 
@@ -33,7 +65,7 @@ args_iou_template_real_filtered = ARGS(
     "models/pcards-03-iou-template/inference/coco_pcards_real_00_test/bbox-filtered.json"
 )
 
-args = args_iou_template_synthetic
+args = args_synth_01_arc
 dt = COCO(args.dataset)
 res = dt.loadRes(args.inference)
 
@@ -78,7 +110,7 @@ def summarize(self):
     def _summarizeDets():
         stats = np.zeros((12,))
         stats[0] = _summarize(1)
-        stats[1] = _summarize(1, iouThr=.25, maxDets=self.params.maxDets[2])
+        stats[1] = _summarize(1, iouThr=.15, maxDets=self.params.maxDets[2])
         stats[2] = _summarize(1, iouThr=.75, maxDets=self.params.maxDets[2])
         stats[3] = _summarize(1, areaRng='small',
                               maxDets=self.params.maxDets[2])
@@ -122,9 +154,13 @@ def summarize(self):
 
 ceval = COCOeval(dt, res, "bbox")
 ceval.params.useCats = 0
-ceval.params.iouThrs = np.linspace(0.25, 0.95, 15)
+ceval.params.iouThrs = np.linspace(0.15, 0.95, 18)
 setattr(ceval, "summarize", summarize)
+
 #%%
 ceval.evaluate()
 ceval.accumulate()
 ceval.summarize(ceval)
+
+
+# %%
