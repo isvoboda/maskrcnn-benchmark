@@ -7,5 +7,5 @@ docker run \
     -it \
     --rm \
     -v $(pwd):/app \
-    ${user}-maskrcnn-benchmark-dev:1.0 \
+    ${user}-maskrcnn-benchmark-dev:1.1 \
     bash

@@ -9,5 +9,5 @@ DOCKER_BUILDKIT=1 docker build \
     --target dev-image \
     --ssh default \
     --add-host=git.ba.innovatrics.net:"$(getent hosts git.ba.innovatrics.net | cut -d' ' -f1)" \
-    -t ${user}-maskrcnn-benchmark-dev:1.0 \
+    -t ${user}-maskrcnn-benchmark-dev:1.1 \
     -f Dockerfile ../../
