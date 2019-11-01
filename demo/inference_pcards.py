@@ -29,22 +29,22 @@ from tqdm import tqdm
 
 #%%
 # config_file = "../configs/inn_pcards_03_iou_freezebbn_template.yaml"
-config_file = "../configs/inn_pcards_03_iou.yaml"
+config_file = "../configs/pcards/inn_pcards_04_real_loss_weights.yaml"
 
 # update the config options with the config file
 cfg.merge_from_file(config_file)
 # MODEL_PTH = "../models/pcards-03-iou-template/model_final.pth"
-MODEL_PTH = "../models/pcards-03-iou/model_final.pth"
+MODEL_PTH = "../models/pcards-04-real_loss_weights/model_0017500.pth"
 cfg.merge_from_list(["MODEL.DEVICE", "cuda", "MODEL.WEIGHT", MODEL_PTH])
 
 H5_synth = "/srv/datasets/pcards/val/pcards-synthetic-00-val-poly.h5"
 H5_real = "/srv/datasets/pcards/test-real/pcards-real-00-test.h5"
-H5 = H5_synth
-INFERENCE_H5 = "pcards-synth-00-test-inference-iou.h5"
+H5 = H5_real
+INFERENCE_H5 = "pcards-real-00-test-inference-loss-weight.h5"
 BASEPATH = os.path.dirname(H5)
 
 #%%
-os.environ["CUDA_VISIBLE_DEVICES"] = "7"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 pcards_demo = COCODemo(
     cfg,
     min_image_size=1278,
