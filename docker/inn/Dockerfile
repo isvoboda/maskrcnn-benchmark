@@ -61,8 +61,8 @@ RUN git clone https://github.com/NVIDIA/apex.git \
 # Install IDF dependencies
 RUN --mount=type=ssh mkdir -p -m 0600 ~/.ssh \
     && ssh-keyscan -p 7999 git.ba.innovatrics.net >> ~/.ssh/known_hosts \
-    && pip wheel git+ssh://git@git.ba.innovatrics.net:7999/~pavel.svoboda/inm.git@1.0rc6#egg=inm --wheel-dir=/dist \
-    && pip wheel git+ssh://git@git.ba.innovatrics.net:7999/~pavel.svoboda/idf.git@master#egg=idf --wheel-dir=/dist \
+    && pip wheel git+ssh://git@git.ba.innovatrics.net:7999/image/inm.git@2.1#egg=inm --wheel-dir=/dist \
+    && pip wheel git+ssh://git@git.ba.innovatrics.net:7999/image/idf.git@master#egg=idf --wheel-dir=/dist \
     && pip install --no-cache-dir /dist/*
 
 WORKDIR /app
