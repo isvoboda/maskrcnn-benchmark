@@ -7,27 +7,47 @@ import os
 class DatasetCatalog(object):
     DATA_DIR = "datasets"
     DATASETS = {
-        "coco_pcards_synthetic_00_train":{
-            "img_dir": "pcards/train",
+        "coco_pcards_synthetic_01_test-arc": {
+            "img_dir": "pcards/test-synth-01-arc",
+            "ann_file": "pcards/annotations/test-type-1-b-synth-01-arc.json"
+        },
+        "coco_pcards_synthetic_01_test-line": {
+            "img_dir": "pcards/test-synth-01-line",
+            "ann_file": "pcards/annotations/test-type-1-b-synth-01-line.json"
+        },
+        "coco_pcards_synthetic_01_test-ellipse": {
+            "img_dir": "pcards/test-synth-01-ellipse",
+            "ann_file": "pcards/annotations/test-type-1-b-synth-01-ellipse.json"
+        },
+        "coco_pcards_synthetic_01_test": {
+            "img_dir": "pcards/test-synth-01",
+            "ann_file": "pcards/annotations/test-type-1-b-synth-01.json"
+        },
+        "coco_pcards_synthetic_00_train": {
+            "img_dir": "pcards/train-synth00",
             "ann_file": "pcards/annotations/pcards-synthetic-00-train-poly.json"
         },
-        "coco_pcards_synthetic_00_val":{
-            "img_dir": "pcards/test",
-            "ann_file": "pcards/annotations/pcards-synthetic-00-val-poly.json"
+        "coco_pcards_synthetic_00_test": {
+            "img_dir": "pcards/test-synth-00",
+            "ann_file": "pcards/annotations/pcards-synthetic-00-test-poly.json"
         },
-        "coco_pcards_real_00_train":{
+        "coco_pcards_real_00_train_labeled": {
+            "img_dir": "pcards/train-real",
+            "ann_file": "pcards/annotations/pcards-real-00-train-labeled.json"
+        },
+        "coco_pcards_real_00_train": {
             "img_dir": "pcards/train-real",
             "ann_file": "pcards/annotations/pcards-real-00-train.json"
         },
-        "coco_pcards_real_00_test":{
+        "coco_pcards_real_00_test": {
             "img_dir": "pcards/test-real",
             "ann_file": "pcards/annotations/pcards-real-00-test.json"
         },
-        "coco_slaps_training_20190412_tips":{
+        "coco_slaps_training_20190412_tips": {
             "img_dir": "slaps/train",
             "ann_file": "slaps/annotations/slaps_training_20190412_tips.json"
         },
-        "coco_slaps_validation_20190412_tips":{
+        "coco_slaps_validation_20190412_tips": {
             "img_dir": "slaps/test",
             "ann_file": "slaps/annotations/slaps_validation_20190412_tips.json"
         },
@@ -205,7 +225,8 @@ class ModelCatalog(object):
         # we use as identifiers in the catalog Caffe2Detectron/COCO/<model_id>/<model_name>
         prefix = ModelCatalog.S3_C2_DETECTRON_URL
         dataset_tag = "keypoints_" if "keypoint" in name else ""
-        suffix = ModelCatalog.C2_DETECTRON_SUFFIX.format(dataset_tag, dataset_tag)
+        suffix = ModelCatalog.C2_DETECTRON_SUFFIX.format(
+            dataset_tag, dataset_tag)
         # remove identification prefix
         name = name[len("Caffe2Detectron/COCO/"):]
         # split in <model_id> and <model_name>
@@ -214,5 +235,6 @@ class ModelCatalog(object):
         model_name = "{}.yaml".format(model_name)
         signature = ModelCatalog.C2_DETECTRON_MODELS[name]
         unique_name = ".".join([model_name, signature])
-        url = "/".join([prefix, model_id, "12_2017_baselines", unique_name, suffix])
+        url = "/".join([prefix, model_id, "12_2017_baselines",
+                        unique_name, suffix])
         return url
