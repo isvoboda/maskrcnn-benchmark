@@ -17,24 +17,20 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 
 # install basics
 RUN apt-get update && apt-get -y install --no-install-recommends \
-        apt-utils git curl \
-        ca-certificates \
-        bzip2 \
-        cmake \
-        tree \
-        htop \
-        bmon \
-        iotop \
-        g++ \
-        libglib2.0-0 \
-        libsm6 \
-        libxext6 \
-        libxrender-dev \
-        ssh-client \
-        python3-dev \
-        python3-virtualenv \
-        python3-pip \
-        python3-setuptools &&\
+    apt-utils git curl \
+    ca-certificates \
+    bzip2 \
+    cmake \
+    g++ \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    ssh-client \
+    python3-dev \
+    python3-virtualenv \
+    python3-pip \
+    python3-setuptools &&\
     apt-get autoremove --purge &&\
     rm -rf /var/lib/apt/lists/*
 
@@ -61,7 +57,6 @@ RUN git clone https://github.com/NVIDIA/apex.git \
 # Install IDF dependencies
 RUN --mount=type=ssh mkdir -p -m 0600 ~/.ssh \
     && ssh-keyscan -p 7999 git.ba.innovatrics.net >> ~/.ssh/known_hosts \
-    && pip wheel git+ssh://git@git.ba.innovatrics.net:7999/image/inm.git@2.1#egg=inm --wheel-dir=/dist \
     && pip wheel git+ssh://git@git.ba.innovatrics.net:7999/image/idf.git@master#egg=idf --wheel-dir=/dist \
     && pip install --no-cache-dir /dist/*
 
@@ -84,18 +79,18 @@ ENV LANG=C.UTF-8
 LABEL com.innovatrics.maskrcnn-dev="1.0.0"
 
 RUN apt-get update && apt-get -y install --no-install-recommends \
-        openssh-client \
-        git \
-        bash-completion \
-        vim \
-        sudo \
-        ibglib2.0-0 \
-        libsm6 \
-        libxext6 \
-        libxrender-dev \
-        python3 \
-        python3-dev \
-        python3-distutils \
+    openssh-client \
+    git \
+    bash-completion \
+    vim \
+    sudo \
+    ibglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    python3 \
+    python3-dev \
+    python3-distutils \
     && apt-get autoremove --purge \
     && rm -rf /var/lib/apt/lists/*
 
@@ -114,6 +109,9 @@ USER $USERNAME
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
+ENTRYPOINT ["/bin/bash", "-c", "/usr/bin/env python -m pip install -e .; exec $@", "/bin/bash"]
+CMD ["/bin/bash"]
+
 WORKDIR /app
 
 # Deployment Image
@@ -126,12 +124,12 @@ ENV LANG=C.UTF-8
 LABEL com.innovatrics.maskrcnn-run="1.0.0"
 
 RUN apt-get update && apt-get -y install --no-install-recommends \
-        libglib2.0-0 \
-        libsm6 \
-        libxext6 \
-        libxrender-dev \
-        python3 \
-        python3-distutils \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    python3 \
+    python3-distutils \
     && apt-get autoremove --purge \
     && rm -rf /var/lib/apt/lists/*
 

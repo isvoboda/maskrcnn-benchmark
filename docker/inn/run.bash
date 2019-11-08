@@ -6,6 +6,6 @@ user="${1:-jw}"
 docker run \
     -it \
     --rm \
-    -v $(pwd):/app \
+    -v "$(pwd):/app" \
     ${user}-maskrcnn-benchmark-dev:1.1 \
-    bash
+
