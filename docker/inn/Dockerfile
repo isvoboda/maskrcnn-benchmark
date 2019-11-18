@@ -44,10 +44,12 @@ RUN pip install -r requirements.txt --no-cache-dir
 WORKDIR /build
 
 # install pycocotools
-RUN git clone https://github.com/cocodataset/cocoapi.git \
+RUN --mount=type=ssh mkdir -p -m 0600 ~/.ssh \
+    && ssh-keyscan -p 7999 git.ba.innovatrics.net >> ~/.ssh/known_hosts \
+    && git clone ssh://git@git.ba.innovatrics.net:7999/image/cocoapi.git -b inn-dev \
     && cd cocoapi/PythonAPI \
     && python3 setup.py bdist_wheel \
-    && pip install dist/*
+    && pip install --no-cache-dir dist/*
 
 # install apex
 RUN git clone https://github.com/NVIDIA/apex.git \
@@ -57,7 +59,7 @@ RUN git clone https://github.com/NVIDIA/apex.git \
 # Install IDF dependencies
 RUN --mount=type=ssh mkdir -p -m 0600 ~/.ssh \
     && ssh-keyscan -p 7999 git.ba.innovatrics.net >> ~/.ssh/known_hosts \
-    && pip wheel git+ssh://git@git.ba.innovatrics.net:7999/image/idf.git@master#egg=idf --wheel-dir=/dist \
+    && pip wheel git+ssh://git@git.ba.innovatrics.net:7999/image/idf.git@v0.7#egg=idf --wheel-dir=/dist \
     && pip install --no-cache-dir /dist/*
 
 WORKDIR /app
@@ -99,7 +101,6 @@ COPY --from=compile-image /opt/venv /opt/venv
 # Create the user
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    && apt-get install -y sudo \
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME \
     && chown $USERNAME:root /opt/venv -R
