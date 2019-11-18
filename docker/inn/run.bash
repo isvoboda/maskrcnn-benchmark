@@ -7,5 +7,7 @@ docker run \
     -it \
     --rm \
     -v "$(pwd):/app" \
+    -v "/srv/datasets:/srv/datasets" \
+    --ipc=host \
+    --runtime nvidia \
     ${user}-maskrcnn-benchmark-dev:1.1 \
-
