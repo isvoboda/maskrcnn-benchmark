@@ -3,10 +3,21 @@
 
 import os
 
-
 class DatasetCatalog(object):
     DATA_DIR = "datasets"
     DATASETS = {
+        "coco_pcards_real_00_train_defects_only_class_type": {
+            "img_dir": "pcards/train-real",
+            "ann_file": "pcards/annotations/pcards-real-00-train-defects-only-class-type.json"
+        },
+        "coco_pcards_real_00_test_defects_only_class_type": {
+            "img_dir": "pcards/test-real",
+            "ann_file": "pcards/annotations/pcards-real-00-test-defects-only-class-type.json"
+        },
+        "coco_pcards_synth_01_train_defects_only_class_type": {
+            "img_dir": "pcards/train-synth-01",
+            "ann_file": "pcards/annotations/pcards-synth-01-train-defects-only-class-type.json"
+        },
         "coco_pcards_synthetic_01_test-arc": {
             "img_dir": "pcards/test-synth-01-arc",
             "ann_file": "pcards/annotations/test-type-1-b-synth-01-arc.json"
@@ -23,6 +34,14 @@ class DatasetCatalog(object):
             "img_dir": "pcards/test-synth-01",
             "ann_file": "pcards/annotations/test-type-1-b-synth-01.json"
         },
+        "coco_pcards_synthetic_01_train": {
+            "img_dir": "pcards/train-synth-01",
+            "ann_file": "pcards/annotations/train-type1-b-synth-01.json"
+        },
+        "coco_pcards_synthetic_01_filtered_train": {
+            "img_dir": "pcards/train-synth-01",
+            "ann_file": "pcards/annotations/train-type1-b-synth-filtered-01.json"
+        },
         "coco_pcards_synthetic_00_train": {
             "img_dir": "pcards/train-synth00",
             "ann_file": "pcards/annotations/pcards-synthetic-00-train-poly.json"
@@ -33,7 +52,11 @@ class DatasetCatalog(object):
         },
         "coco_pcards_real_00_train_labeled": {
             "img_dir": "pcards/train-real",
-            "ann_file": "pcards/annotations/pcards-real-00-train-labeled.json"
+            "ann_file": "pcards/annotations/pcards-real-00-train-defects-labeled.json"
+        },
+        "coco_pcards_real_00_test_labeled": {
+            "img_dir": "pcards/test-real",
+            "ann_file": "pcards/annotations/pcards-real-00-test-defects-labeled-filtered.json"
         },
         "coco_pcards_real_00_train": {
             "img_dir": "pcards/train-real",
