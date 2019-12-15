@@ -63,6 +63,20 @@ args_M08_coco_pcards_real_00_test = ARGS(
     "models/08-pcards-04-synth_labeled_loss_weights/inference/coco_pcards_real_00_test/bbox.json",
 )
 
+# ---------------------------- M09 -------------------------------
+args_M09_coco_pcards_synth_02_train_defects = ARGS(
+    "datasets/pcards/annotations/train-type-1-b-synth-02.json",
+    "models/09-pcards-04-synth_labeled_loss_weights/inference/coco_pcards_synthetic_02_filtered_train/bbox.json",
+)
+args_M09_coco_pcards_real_00_test_defects_only_class_type = ARGS(
+    "datasets/pcards/annotations/pcards-real-00-test-defects-only-class-type.json",
+    "models/09-pcards-04-synth_labeled_loss_weights/inference/coco_pcards_real_00_test_defects_only_class_type/bbox.json",
+)
+args_M09_coco_pcards_real_00_test = ARGS(
+    "datasets/pcards/annotations/pcards-real-00-test.json",
+    "models/09-pcards-04-synth_labeled_loss_weights/inference/coco_pcards_real_00_test/bbox.json",
+)
+
 # ----------------------------------------------------------------
 
 args_real_00_test_labeled = ARGS(
@@ -119,13 +133,13 @@ args_iou_template_real_filtered = ARGS(
     "models/pcards-03-iou-template/inference/coco_pcards_real_00_test/bbox-filtered.json",
 )
 
-args = args_M08_coco_pcards_synth_01_train_defects_only_class_type
+args = args_M09_coco_pcards_real_00_test
 dt = COCO(args.dataset)
 res = dt.loadRes(args.inference)
 
 iouThrs = np.linspace(0.15, 0.95, np.round((0.95 - 0.15) / 0.05) + 1, endpoint=True)
 ceval = COCOeval(dt, res, "bbox", iouThrs=iouThrs)
-ceval.params.useCats = 1
+ceval.params.useCats = 0
 #%%
 ceval.evaluate()
 ceval.accumulate()

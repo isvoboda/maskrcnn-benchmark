@@ -36,11 +36,15 @@ class DatasetCatalog(object):
         },
         "coco_pcards_synthetic_01_train": {
             "img_dir": "pcards/train-synth-01",
-            "ann_file": "pcards/annotations/train-type1-b-synth-01.json"
+            "ann_file": "pcards/annotations/train-type-1-b-synth-01.json"
         },
         "coco_pcards_synthetic_01_filtered_train": {
             "img_dir": "pcards/train-synth-01",
-            "ann_file": "pcards/annotations/train-type1-b-synth-filtered-01.json"
+            "ann_file": "pcards/annotations/train-type-1-b-synth-filtered-01.json"
+        },
+        "coco_pcards_synthetic_02_filtered_train": {
+            "img_dir": "pcards/train-synth-02",
+            "ann_file": "pcards/annotations/train-type-1-b-synth-02.json"
         },
         "coco_pcards_synthetic_00_train": {
             "img_dir": "pcards/train-synth00",
